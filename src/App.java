@@ -7,7 +7,9 @@ import java.util.ArrayList;
 public class App {
     public static void main(String[] args) throws Exception {
         // Initializing variables
-        String word = rollWord();
+        ArrayList<String> dictionary = new ArrayList<String>();
+        dictionary = parseDictionary();
+        String word = rollWord(dictionary);
         String guess = "";
         int error = 0;
         int tries = 6;
@@ -22,12 +24,11 @@ public class App {
             // Input reading
             guess = scanGuess.nextLine();
             // Call guessErrorHandler to check if answer is valid
-            error = guessErrorHandler(guess);
+            error = guessErrorHandler(guess, dictionary);
             // If no error was thrown, compare guess with word
             if (error == 0) {
                 guess = guess.toUpperCase();
                 System.out.println("Your guess was: " + guess);
-                // Conditional could be written in the if check itself, but having the logic in a separate method improves modularity
                 if (word.equals(guess)) {
                     System.out.println("Correct!");
                     scanGuess.close();
@@ -50,25 +51,31 @@ public class App {
     }
 
     // guessErrorHandler checks if the user's input is a valid answer, returns an error code if not.
-    static int guessErrorHandler(String guess) {
+    static int guessErrorHandler(String guess, ArrayList<String> dictionary) {
         if (guess.matches("[a-zA-Z]+")) {
             if (guess.length() == 5) {
-                System.out.println("Guess is all letters.");
-                return 0;
+                guess = guess.toUpperCase();
+                if (dictionary.contains(guess)) {
+                    System.out.println("Guess is all letters.");
+                    return 0;
+                } else {
+                    System.out.println("Guess is not a dictionary word. Guess must be a real word.");
+                    return 3;
+                }
             } else {
                 System.out.println("Wrong guess length. Guess must have 5 letters.");
                 return 2;
             }
         } else {
-            System.out.println("Guess has invalid characters. Please input only letters.");
+            System.out.println("Guess has invalid characters. Guess must have only letters.");
             return 1;
         }
     }
 
     // rollWord returns a random word from a dictionary
-    static String rollWord() {
-        ArrayList<String> dictionary = new ArrayList<String>();
-        dictionary = parseDictionary();
+    static String rollWord(ArrayList<String> dictionary) {
+        //ArrayList<String> dictionary = new ArrayList<String>();
+        //dictionary = parseDictionary();
         String roll = dictionary.get(new Random().nextInt(dictionary.size()));
         return roll;
     }
