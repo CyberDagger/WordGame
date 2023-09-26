@@ -5,18 +5,25 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class App {
+    // Defining ANSI escape codes
+    final static String RESET = "\u001B[0m";
+    final static String YELLOW = "\u001B[33m";
+    final static String GREEN = "\u001B[32m";
+    final static String BLUE = "\u001B[34m";
+
     public static void main(String[] args) throws Exception {
         // Initializing variables
         ArrayList<String> dictionary = new ArrayList<String>();
         dictionary = parseDictionary();
         String word = rollWord(dictionary);
         String guess = "";
+        String checkedGuess;
         int error = 0;
         int tries = 6;
         Scanner scanGuess = new Scanner(System.in);
 
         // Initial terminal request
-        System.out.println("The word is " + word + ".");
+        System.out.println("The word is " + BLUE + word + RESET + ".");
         System.out.println("Please insert guess: ");
         
         // Main cycle of the program runs through iterations of successive guesses
@@ -29,6 +36,8 @@ public class App {
             if (error == 0) {
                 guess = guess.toUpperCase();
                 System.out.println("Your guess was: " + guess);
+                checkedGuess = partialCheck(word, guess);
+                System.out.println(checkedGuess);
                 if (word.equals(guess)) {
                     System.out.println("Correct!");
                     scanGuess.close();
@@ -100,5 +109,28 @@ public class App {
             e.printStackTrace();
         }
         return fullDictionary;
+    }
+
+    static String partialCheck (String word, String guess) {
+        int length = word.length();
+        String letter;
+        String result = "";
+        int inc = 0;
+        while (inc < length) {
+            letter = String.valueOf(guess.charAt(inc));
+            if (word.contains(letter)) {
+                if (guess.charAt(inc) == word.charAt(inc)) {
+                    result += GREEN;
+                } else {
+                    result += YELLOW;
+                }
+            } else {
+                result += RESET;
+            }
+            result += guess.charAt(inc);
+            inc++;
+        }
+        result += RESET;
+        return result;
     }
 }
